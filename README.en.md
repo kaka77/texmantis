@@ -13,6 +13,13 @@ A portable Windows system toolbox with a built-in LAN instant-messaging suite. B
 
 [Download](https://github.com/kaka77/texmantis/releases) · [Building](#building) · [Source layout](#source-layout)
 
+## Screenshots
+
+| | |
+|---|---|
+| ![System toolbox](docs/screenshots/home.png) | ![LAN encrypted chat](docs/screenshots/social.png) |
+| System toolbox home | LAN encrypted chat |
+
 ## Features
 
 ### System tools

@@ -13,6 +13,13 @@ Windows 便携式系统工具箱，附带局域网即时通讯。基于 Tauri 2�
 
 [下载](https://github.com/kaka77/texmantis/releases) · [构建方法](#构建) · [源码结构](#源码结构)
 
+## 界面预览
+
+| | |
+|---|---|
+| ![系统工具箱](docs/screenshots/home.png) | ![局域网加密聊天](docs/screenshots/social.png) |
+| 系统工具箱首页 | 局域网加密聊天 |
+
 ## 功能
 
 ### 系统工具

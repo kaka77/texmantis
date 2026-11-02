@@ -114,7 +114,6 @@
     </div>
 
     <div class="tip">{$T("home.tip")}</div>
-    <div class="sig"></div>
   </div>
 </div>
 
@@ -169,8 +168,4 @@
   .tlabel { font-size: 12.5px; font-weight: 650; color: var(--text); white-space: nowrap; }
   .tdesc { font-size: 10.5px; color: var(--text-dim); white-space: nowrap; overflow: hidden; text-overflow: ellipsis; }
   .tip { font-size: 11.5px; color: var(--text-dim); margin-top: 8px; }
-  .sig {
-    font-size: 11px; color: var(--text-dim); letter-spacing: 1px; margin-top: 5px;
-    border-top: 1px dashed rgba(148, 163, 184, 0.4); padding-top: 8px; width: 42%;
-  }
 </style>
