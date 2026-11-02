@@ -1,0 +1,30 @@
+# 构建产物 / 依赖
+node_modules
+dist
+src-tauri/target
+src-tauri/gen
+*.log
+
+# 发布二进制（发布物走 GitHub Releases，不入库）
+release-windows/
+
+# 用户本地数据（社交记录 / 推送历史 / 调试日志）
+*.db
+data/
+social/
+debug.log*
+
+# 编辑器 / 系统
+.DS_Store
+Thumbs.db
+*.swp
+.idea/
+.vscode/
+
+# 临时 / 本地产物
+*.zip
+backups/
+xxx1.txt
+
+# 本机开发环境（与项目无关）
+plugins/

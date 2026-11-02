@@ -1,0 +1,79 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8" />
+<title>青刃</title>
+<style>
+  * { margin: 0; padding: 0; box-sizing: border-box; }
+  html, body {
+    width: 100%; height: 100%; overflow: hidden;
+    background: linear-gradient(160deg, #0f5f45 0%, #093c2c 100%);
+    border-left: 1px solid rgba(125, 255, 208, 0.45);
+    display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 3px;
+    cursor: pointer; user-select: none;
+    transition: filter 0.15s ease;
+  }
+  body:hover { filter: brightness(1.18); }
+  .led {
+    position: absolute; left: 2px; top: 22%; width: 3px; height: 56%; border-radius: 2px;
+    background: linear-gradient(180deg, rgba(125,255,208,0.95), rgba(125,255,208,0.15));
+    animation: ledbreathe 2.2s ease-in-out infinite;
+  }
+  .ufo { transition: transform 0.18s ease; }
+  body:hover .ufo { transform: translateX(-2px) scale(1.06); }
+  .cockpit { animation: pulse 2.2s ease-in-out infinite; }
+  .halo { animation: halo 2.2s ease-in-out infinite; }
+  @keyframes pulse { 0%, 100% { opacity: 1; } 50% { opacity: 0.45; } }
+  @keyframes halo { 0%, 100% { opacity: 0.4; } 50% { opacity: 0.12; } }
+  @keyframes ledbreathe { 0%, 100% { opacity: 0.95; } 50% { opacity: 0.4; } }
+  .brand { font-size: 9px; color: #d7fff0; letter-spacing: 3px; text-indent: 3px; opacity: 0.85; }
+</style>
+</head>
+<body id="dock">
+  <div class="led"></div>
+  <svg class="ufo" viewBox="0 0 96 96" width="34" height="34">
+    <defs>
+      <linearGradient id="g" x1="0" y1="0" x2="1" y2="0">
+        <stop offset="0" stop-color="#17c98d"/>
+        <stop offset="1" stop-color="#0a7a5c"/>
+      </linearGradient>
+    </defs>
+    <path d="M8 44 Q5 48 8 52 L66 86 Q76 92 76 81 L76 15 Q76 4 66 10 Z"
+      fill="url(#g)" stroke="#7dffd0" stroke-width="3" stroke-linejoin="round"/>
+    <path d="M12 45 L62 13" stroke="#d7fff0" stroke-width="2.4" stroke-linecap="round" opacity="0.9"/>
+    <circle class="halo" cx="34" cy="48" r="13" fill="#a7ffdc"/>
+    <circle class="cockpit" cx="34" cy="48" r="8" fill="#d9fff1"/>
+    <circle cx="68" cy="26" r="3.2" fill="#eafff6"/>
+    <circle cx="71" cy="48" r="3.2" fill="#ffd83d"/>
+    <circle cx="68" cy="70" r="3.2" fill="#eafff6"/>
+  </svg>
+  <div class="brand">青刃</div>
+  <script>
+    function slide(out) {
+      try { window.__TAURI_INTERNALS__.invoke('float_slide', { out: out }); } catch (e) {}
+    }
+    function report() {
+      try {
+        window.__TAURI_INTERNALS__.invoke('float_page_ready', {
+          w: document.documentElement.clientWidth,
+          h: document.documentElement.clientHeight
+        });
+      } catch (e) {}
+    }
+    // 首次探头演示：滑出 1.7s 后收回
+    var t1 = setTimeout(function () { slide(true); }, 700);
+    var t2 = setTimeout(function () { slide(false); }, 2400);
+    // 悬停滑出 / 离开滑回
+    document.body.addEventListener('mouseenter', function () {
+      clearTimeout(t1); clearTimeout(t2); slide(true);
+    });
+    document.body.addEventListener('mouseleave', function () { slide(false); });
+    document.body.addEventListener('click', function () {
+      try { window.__TAURI_INTERNALS__.invoke('float_summon'); } catch (e) {}
+    });
+    // 渲染状态回报（诊断）
+    report();
+    setTimeout(report, 600);
+  </script>
+</body>
+</html>

@@ -1,0 +1,25 @@
+{
+  "name": "texmantis",
+  "private": true,
+  "version": "0.9.27",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "node scripts/stamp.mjs && vite build",
+    "preview": "vite preview",
+    "tauri": "tauri",
+    "icons": "pwsh -NoProfile -ExecutionPolicy Bypass -File scripts/make-icons.ps1"
+  },
+  "dependencies": {
+    "@tauri-apps/api": "^2.1.1"
+  },
+  "devDependencies": {
+    "@sveltejs/vite-plugin-svelte": "^3.1.2",
+    "@tauri-apps/cli": "^2.1.0",
+    "svelte": "^4.2.19",
+    "typescript": "^5.6.3",
+    "vite": "^5.4.10"
+  },
+  "description": "青刃 TexMantis — Windows 便携式系统工具箱 × 局域网社交（Tauri 2 + Rust + Svelte 4）",
+  "license": "MIT"
+}

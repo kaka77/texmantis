@@ -1,0 +1,14 @@
+{
+  "$schema": "../gen/schemas/desktop-schema.json",
+  "identifier": "overlay",
+  "description": "青刃 TexMantis 气泡/浮标窗口能力（核心事件监听 + 窗口隐藏）",
+  "windows": [
+    "notifier",
+    "float"
+  ],
+  "permissions": [
+    "core:default",
+    "core:window:allow-hide",
+    "core:window:allow-show"
+  ]
+}

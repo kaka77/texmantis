@@ -1,0 +1,47 @@
+[package]
+name = "texmantis"
+version = "0.9.27"
+description = "青刃 TexMantis · 系统精密工具箱（Windows x64 绿色免安装）"
+edition = "2021"
+
+[build-dependencies]
+tauri-build = { version = "2", features = [] }
+
+[dependencies]
+tauri-plugin-single-instance = "2"
+sha2 = "0.10"
+# 社交模块端到端加密（X25519 会话密钥协商 + ChaCha20-Poly1305 AEAD 帧）
+getrandom = "0.2"
+x25519-dalek = { version = "2", features = ["static_secrets"] }
+chacha20poly1305 = "0.10"
+tauri = { version = "2", features = ["tray-icon"] }
+serde = { version = "1", features = ["derive"] }
+serde_json = "1"
+sysinfo = "0.32"
+window-vibrancy = "0.5"
+# v0.9.0 社交发文件：系统原生文件选择器（Web 端 input 拿不到真实路径）
+rfd = "0.15"
+
+[target."cfg(windows)".dependencies]
+windows = { version = "0.58", features = [
+  "Win32_Foundation",
+  "Win32_System_Threading",
+  "Win32_System_RestartManager",
+  "Win32_Security_Cryptography", "Win32_Security_WinTrust", "Win32_System_EventLog", "Win32_System_Registry",
+  "Win32_Storage_FileSystem", "Win32_System_LibraryLoader", "Win32_System_Time",
+  "Win32_NetworkManagement_IpHelper",
+  "Win32_System_Com",
+  "Win32_System_Diagnostics_Debug",
+  "Win32_UI_Shell",
+  "Win32_UI_WindowsAndMessaging",
+  "Win32_UI_Input_KeyboardAndMouse",
+  "Win32_Security",
+  "Win32_Graphics_Dwm", "Win32_Graphics_Gdi", "Win32_UI_HiDpi", "Win32_System_Com", "Win32_UI_Shell_Common"] }
+
+[profile.release]
+opt-level = "s"
+lto = "thin"
+strip = true
+# v0.9.27 panic=abort：不展开栈回溯，异常时直接退出（配合前端全局错误提示），
+# 同时消除依赖 crate 的 registry 源码路径字符串（panic 定位表）被编入产物
+panic = "abort"
