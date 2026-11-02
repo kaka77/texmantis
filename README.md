@@ -1,3 +1,9 @@
+<div align="center">
+
+[English](README.en.md) | **简体中文**
+
+</div>
+
 # 青刃 TexMantis
 
 Windows 便携式系统工具箱，附带局域网即时通讯。基于 Tauri 2（Rust 后端 + Svelte 4 前端），以单个可执行文件分发，免安装、无账号、不依赖服务端。
