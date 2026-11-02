@@ -1,6 +1,6 @@
 [package]
 name = "texmantis"
-version = "0.9.27"
+version = "0.9.28"
 description = "青刃 TexMantis · 系统精密工具箱（Windows x64 绿色免安装）"
 edition = "2021"
 

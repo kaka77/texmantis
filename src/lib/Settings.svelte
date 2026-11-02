@@ -3,6 +3,7 @@
   import { settingsGet, settingsSetAutoStart, settingsSetFlag, floatDockSet, alertSetRetention } from "./api";
   import type { AppSettings } from "./api";
   import { toast, pauseOnBlurEnabled } from "./stores";
+  import { T, lang, setLang, type Lang } from "./i18n";
 
   let st: AppSettings | null = null;
   let busy = "";
@@ -12,7 +13,7 @@
     try {
       await settingsSetAutoStart(on);
       if (st) st.auto_start = on;
-      toast(on ? "已加入开机启动（当前用户，无需管理员）" : "已取消开机启动", "ok");
+      toast(on ? $T("set.toast.auto.on") : $T("set.toast.auto.off"), "ok");
     } catch (e) { toast(String(e), "err"); }
     finally { busy = ""; }
   }
@@ -25,7 +26,7 @@
         if (name === "CloseToTray") st.close_to_tray = on;
         else st.pause_on_blur = on;
       }
-      toast("已保存", "ok");
+      toast($T("set.toast.saved"), "ok");
     } catch (e) { toast(String(e), "err"); }
     finally { busy = ""; }
   }
@@ -35,7 +36,7 @@
     try {
       await settingsSetFlag("DiagLog", on);
       if (st) st.diag_log = on;
-      toast(on ? "诊断日志已开启（data\\logs\\diag.log）" : "诊断日志已关闭，日志文件已删除", "ok");
+      toast(on ? $T("set.toast.diag.on") : $T("set.toast.diag.off"), "ok");
     } catch (e) { toast(String(e), "err"); }
     finally { busy = ""; }
   }
@@ -45,7 +46,7 @@
     try {
       await settingsSetFlag("AlertMonitor", on);
       if (st) st.alert_monitor = on;
-      toast(on ? "威胁预警监控已开启（需本机安装 Sysmon，事件驱动零轮询）" : "威胁预警监控已关闭，立即生效", "ok");
+      toast(on ? $T("set.toast.amon.on") : $T("set.toast.amon.off"), "ok");
     } catch (e) { toast(String(e), "err"); }
     finally { busy = ""; }
   }
@@ -54,7 +55,7 @@
     try {
       await alertSetRetention(days);
       if (st) st.alert_retention_days = days;
-      toast(`告警保留期已设为 ${days === 7 ? "一周" : days === 30 ? "一个月" : "三个月"}，过期数据已即时清除`, "ok");
+      toast($T("set.toast.ret", { n: $T(days === 7 ? "ret.week" : days === 30 ? "ret.month" : "ret.quarter") }), "ok");
     } catch (e) { toast(String(e), "err"); }
   }
 
@@ -75,12 +76,26 @@
 
 <div class="view">
   <div class="card" style="flex:none">
-    <div class="opt-group-title">启动与托盘</div>
+    <div class="opt-group-title">{$T("set.group.lang")}</div>
+    <div class="opt-row">
+      <div class="info">
+        <div class="t">{$lang === "zh" ? "界面语言" : "Interface language"}</div>
+        <div class="d">{$lang === "zh" ? "切换后立即生效，仅影响本机界面文字" : "Applies immediately; affects UI text only"}</div>
+      </div>
+      <select value={$lang} on:change={(e) => setLang(e.currentTarget.value === "en" ? "en" : "zh")}>
+        <option value="zh">中文</option>
+        <option value="en">English</option>
+      </select>
+    </div>
+  </div>
+
+  <div class="card" style="flex:none">
+    <div class="opt-group-title">{$T("set.group.startup")}</div>
     {#if st}
       <div class="opt-row">
         <div class="info">
-          <div class="t">开机自动启动</div>
-          <div class="d">写入当前用户注册表 Run 键（不建服务/计划任务，零常驻开销）；取消勾选即还原</div>
+          <div class="t">{$T("set.autostart")}</div>
+          <div class="d">{$T("set.autostart.d")}</div>
         </div>
         <label class="switch">
           <input type="checkbox" checked={st.auto_start} disabled={busy === "auto"}
@@ -90,8 +105,8 @@
       </div>
       <div class="opt-row">
         <div class="info">
-          <div class="t">关闭按钮隐藏到托盘</div>
-          <div class="d">点击 ✕ 时隐藏窗口并保留托盘图标，右键托盘图标可彻底退出；配合开机启动可后台待命</div>
+          <div class="t">{$T("set.closeToTray")}</div>
+          <div class="d">{$T("set.closeToTray.d")}</div>
         </div>
         <label class="switch">
           <input type="checkbox" checked={st.close_to_tray} disabled={busy === "CloseToTray"}
@@ -101,8 +116,8 @@
       </div>
       <div class="opt-row">
         <div class="info">
-          <div class="t">贴边浮漂（迷你 UFO）</div>
-          <div class="d">屏幕右缘趴着一艘迷你三角 UFO：关闭主窗自动停靠贴边，点浮标一键呼出主窗，不遮挡屏幕</div>
+          <div class="t">{$T("set.float")}</div>
+          <div class="d">{$T("set.float.d")}</div>
         </div>
         <label class="switch">
           <input type="checkbox" checked={st.float_dock} disabled={busy === "float"}
@@ -112,8 +127,8 @@
       </div>
       <div class="opt-row">
         <div class="info">
-          <div class="t">窗口失焦时暂停自动刷新</div>
-          <div class="d">资源占用核心策略：窗口不在前台/被最小化时，进程、网络等页面的轮询自动空转，切回前台立即恢复，CPU 占用趋近于 0</div>
+          <div class="t">{$T("set.pauseOnBlur")}</div>
+          <div class="d">{$T("set.pauseOnBlur.d")}</div>
         </div>
         <label class="switch">
           <input type="checkbox" checked={st.pause_on_blur} disabled={busy === "PauseOnBlur"}
@@ -123,8 +138,8 @@
       </div>
       <div class="opt-row">
         <div class="info">
-          <div class="t">诊断日志</div>
-          <div class="d">记录预警链路 / 端到端自检 / 健康巡检等 debug 明细到 data\logs\diag.log，默认关闭——不开启则完全不产生日志；关闭时会自动删除已有日志文件</div>
+          <div class="t">{$T("set.diag")}</div>
+          <div class="d">{$T("set.diag.d")}</div>
         </div>
         <label class="switch">
           <input type="checkbox" checked={st.diag_log} disabled={busy === "diag"}
@@ -133,17 +148,17 @@
         </label>
       </div>
     {:else}
-      <div class="opt-row"><div class="info"><div class="d">加载中…</div></div></div>
+      <div class="opt-row"><div class="info"><div class="d">{$T("set.loading")}</div></div></div>
     {/if}
   </div>
 
   <div class="card" style="flex:none">
-    <div class="opt-group-title">威胁预警</div>
+    <div class="opt-group-title">{$T("set.group.alert")}</div>
     {#if st}
       <div class="opt-row">
         <div class="info">
-          <div class="t">Sysmon 威胁监控</div>
-          <div class="d">基于 Windows 事件订阅的高风险行为告警（事件驱动、零轮询、无临时文件）；需本机安装 Sysmon，规则可在「威胁预警」页配置</div>
+          <div class="t">{$T("set.sysmon")}</div>
+          <div class="d">{$T("set.sysmon.d")}</div>
         </div>
         <label class="switch">
           <input type="checkbox" checked={st.alert_monitor} disabled={busy === "amon"}
@@ -153,14 +168,14 @@
       </div>
       <div class="opt-row">
         <div class="info">
-          <div class="t">告警保留期</div>
-          <div class="d">自动清除 alerts.json（与工具同目录）中多久之前的告警数据，变更即时生效并立即清理</div>
+          <div class="t">{$T("set.retention")}</div>
+          <div class="d">{$T("set.retention.d")}</div>
         </div>
         <select disabled={busy === "amon"} value={st.alert_retention_days}
           on:change={(e) => changeRetention(Number(e.currentTarget.value))}>
-          <option value={7}>一周前</option>
-          <option value={30}>一个月前</option>
-          <option value={90}>三个月前</option>
+          <option value={7}>{$T("set.ret.7")}</option>
+          <option value={30}>{$T("set.ret.30")}</option>
+          <option value={90}>{$T("set.ret.90")}</option>
         </select>
       </div>
     {:else}
@@ -169,16 +184,10 @@
   </div>
 
   <div class="card" style="flex:none">
-    <div class="opt-group-title">资源占用说明</div>
+    <div class="opt-group-title">{$T("set.group.res")}</div>
     <div class="opt-row">
       <div class="info">
-        <div class="d" style="line-height:1.8">
-          · 无任何后台服务 / 驱动 / 常驻进程，关闭窗口（未开托盘/浮漂驻留）即完全退出<br />
-          · 托盘仅为消息泵，无轮询线程；网络监控走 iphlpapi 内核 API（毫秒级、无 PowerShell 开销）<br />
-          · 自动刷新定时器仅在其页面处于前台可见时运行，失焦自动暂停（可关闭此策略）<br />
-          · IP 归属地为离线库查询，数据不出本机<br />
-          · 启动时自动启用 SeDebug / SeTakeOwnership / SeBackup / SeRestore 等管理特权（用户态最高权限组合）
-        </div>
+        <div class="d" style="line-height:1.8; white-space:pre-line">{$T("set.res.body")}</div>
       </div>
     </div>
   </div>

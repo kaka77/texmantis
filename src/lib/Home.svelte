@@ -2,6 +2,7 @@
   import { onMount, onDestroy } from "svelte";
   import { view } from "./stores";
   import type { View } from "./stores";
+  import { T } from "./i18n";
 
   // 拟真悬停：静置期保持正立 + 缓慢沉浮（标志始终可见），随机间隔优雅转一整圈后归位——离开页面即沉默
   let markEl: SVGSVGElement;
@@ -38,34 +39,34 @@
   });
   onDestroy(() => cancelAnimationFrame(rafId));
 
-  type Feat = { id: View; icon: string; label: string; desc: string; g: string };
+  type Feat = { id: View; icon: string; g: string };
   // 渐变分栏：三大功能分区 —— 分区标题渐变线条 + 每项独立主题渐变（左缘线条 + 图标底），
   // 一眼分区、一键直达（与侧边导航一致）
-  const zones: { label: string; g: string; feats: Feat[] }[] = [
+  const zones: { key: string; g: string; feats: Feat[] }[] = [
     {
-      label: "安全检测与预警", g: "linear-gradient(90deg,#e11d48,#f97316)",
+      key: "sec", g: "linear-gradient(90deg,#e11d48,#f97316)",
       feats: [
-        { id: "alerts", icon: "⚠", label: "威胁预警", desc: "Sysmon 规则 · 实时气泡告警", g: "linear-gradient(135deg,#e11d48,#fb7185)" },
-        { id: "network", icon: "🌐", label: "网络监控", desc: "外联 IP · 情报查询", g: "linear-gradient(135deg,#2563eb,#60a5fa)" },
-        { id: "events", icon: "📜", label: "事件日志", desc: "登录 · 账户 · 反取证", g: "linear-gradient(135deg,#7c3aed,#a78bfa)" },
+        { id: "alerts", icon: "⚠", g: "linear-gradient(135deg,#e11d48,#fb7185)" },
+        { id: "network", icon: "🌐", g: "linear-gradient(135deg,#2563eb,#60a5fa)" },
+        { id: "events", icon: "📜", g: "linear-gradient(135deg,#7c3aed,#a78bfa)" },
       ],
     },
     {
-      label: "文件与数据", g: "linear-gradient(90deg,#0ea5e9,#06b6d4)",
+      key: "file", g: "linear-gradient(90deg,#0ea5e9,#06b6d4)",
       feats: [
-        { id: "unlock", icon: "🔓", label: "文件解锁", desc: "占用检测 · 强制删除", g: "linear-gradient(135deg,#d97706,#fbbf24)" },
-        { id: "extract", icon: "⌗", label: "数据提取", desc: "IP · URL · 域名", g: "linear-gradient(135deg,#0891b2,#22d3ee)" },
-        { id: "codec", icon: "⇆", label: "编解码", desc: "Base64 / URL", g: "linear-gradient(135deg,#4f46e5,#818cf8)" },
+        { id: "unlock", icon: "🔓", g: "linear-gradient(135deg,#d97706,#fbbf24)" },
+        { id: "extract", icon: "⌗", g: "linear-gradient(135deg,#0891b2,#22d3ee)" },
+        { id: "codec", icon: "⇆", g: "linear-gradient(135deg,#4f46e5,#818cf8)" },
       ],
     },
     {
-      label: "系统管理", g: "linear-gradient(90deg,#059669,#14b8a6)",
+      key: "sys", g: "linear-gradient(90deg,#059669,#14b8a6)",
       feats: [
-        { id: "processes", icon: "◈", label: "进程", desc: "签名甄别 · 进程树", g: "linear-gradient(135deg,#0d9488,#2dd4bf)" },
-        { id: "services", icon: "⚙", label: "服务", desc: "启停禁用 · 非微软过滤", g: "linear-gradient(135deg,#475569,#94a3b8)" },
-        { id: "startup", icon: "⏻", label: "启动项", desc: "Run 键 · 启动文件夹", g: "linear-gradient(135deg,#db2777,#f472b6)" },
-        { id: "tasks", icon: "⏱", label: "计划任务", desc: "非系统任务管理", g: "linear-gradient(135deg,#ca8a04,#eab308)" },
-        { id: "optimize", icon: "⚡", label: "系统优化", desc: "桌面 · 快捷键 · 右键", g: "linear-gradient(135deg,#059669,#34d399)" },
+        { id: "processes", icon: "◈", g: "linear-gradient(135deg,#0d9488,#2dd4bf)" },
+        { id: "services", icon: "⚙", g: "linear-gradient(135deg,#475569,#94a3b8)" },
+        { id: "startup", icon: "⏻", g: "linear-gradient(135deg,#db2777,#f472b6)" },
+        { id: "tasks", icon: "⏱", g: "linear-gradient(135deg,#ca8a04,#eab308)" },
+        { id: "optimize", icon: "⚡", g: "linear-gradient(135deg,#059669,#34d399)" },
       ],
     },
   ];
@@ -89,27 +90,21 @@
       <circle cx="68" cy="70" r="2.6" fill="#0a4a37"/>
     </svg>
     <h1>青刃 <span class="latin">TexMantis</span></h1>
-    <div class="sub">系统精密工具箱 · Windows x64 绿色免安装</div>
+    <div class="sub">{$T("home.sub")}</div>
 
-    <p class="intro">
-      青刃是一把藏在系统深处的精密小刀：进程、服务、启动项、计划任务一览无余，数字签名甄别可疑程序；
-      文件解锁配合备份语义强删，专治最顽固的占用；网络监控直连内核 API，外联 IP 离线归属地、
-      右键一键微步在线 / VirusTotal 威胁情报查询；数据提取从日志与流量中批量捞取 IP、URL 与域名；
-      系统优化让桌面与资源管理器更顺手。它无服务、无驱动、无常驻进程，关闭即退、绝不驻留；
-      启动即自动启用管理特权组，直取用户态最高权限——青竹之雅，利刃之锋。
-    </p>
+    <p class="intro">{$T("home.intro")}</p>
 
     <div class="zones">
-      {#each zones as z (z.label)}
+      {#each zones as z (z.key)}
         <section class="zone" style="--zg:{z.g}">
-          <div class="zhead"><span class="zlabel">{z.label}</span></div>
+          <div class="zhead"><span class="zlabel">{$T(`home.zone.${z.key}`)}</span></div>
           <div class="zgrid">
             {#each z.feats as e (e.id)}
               <button type="button" class="tile" style="--g:{e.g}" on:click={() => view.set(e.id)}>
                 <span class="ticon">{e.icon}</span>
                 <span class="ttext">
-                  <span class="tlabel">{e.label}</span>
-                  <span class="tdesc">{e.desc}</span>
+                  <span class="tlabel">{$T(`home.f.${e.id}`)}</span>
+                  <span class="tdesc">{$T(`home.f.${e.id}.d`)}</span>
                 </span>
               </button>
             {/each}
@@ -118,7 +113,7 @@
       {/each}
     </div>
 
-    <div class="tip">提示：标题栏 ⚙ 可开启开机启动、托盘驻留与贴边浮漂（右缘磁吸拉片）。</div>
+    <div class="tip">{$T("home.tip")}</div>
     <div class="sig"></div>
   </div>
 </div>

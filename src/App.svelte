@@ -3,6 +3,7 @@
   import { flip } from "svelte/animate";
   import { fade } from "svelte/transition";
   import { view, toasts, toast, confirmBox, askConfirm, dropQueue, ctxMenu, closeCtx, appPaused, pauseOnBlurEnabled, unlockRequest, pendingAlertDetail, pendingSocialOpen, focusMode, apiEnabled, type View } from "./lib/stores";
+import { T } from "./lib/i18n";
   import { invoke } from "@tauri-apps/api/core";
   import { isElevated } from "./lib/api";
   import type { AlertInfo } from "./lib/api";
@@ -231,7 +232,7 @@
         });
         // v0.9.2 托盘退出确认（社交激活后关窗驻留，退出必须用户点头）
         await listen("app-exit-request", async () => {
-          const ok = await askConfirm("确定退出青刃 TexMantis？\n\n社交功能将离线，消息与未完成的文件传输会中断。");
+          const ok = await askConfirm($T("app.exit.confirm"));
           if (ok) {
             const { invoke } = await import("@tauri-apps/api/core");
             invoke("app_exit_now").catch(() => {});
@@ -274,29 +275,29 @@
       {#if chatModeOn}
         {#key sloganIdx}<span class="dim slogan" in:fade={{ duration: 420 }}>{SLOGANS[sloganIdx]}</span>{/key}
       {:else}
-        <span class="dim">系统精密工具箱</span>
+        <span class="dim">{$T("app.tagline")}</span>
       {/if}
       <span class="stamp">v{APP_VERSION} · build {BUILD_STAMP}</span></div>
     <div class="lights">
-      <button class="light" title="API 消息 · 开放推送接口" on:click={() => view.set($view === "api" ? "processes" : "api")}>
+      <button class="light" title={$T("app.btn.api")} on:click={() => view.set($view === "api" ? "processes" : "api")}>
         <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
           <path d="M8 1.8a4.6 4.6 0 0 0-4.6 4.6c0 2.2-.5 3.4-1.1 4.3-.3.4 0 1 .5 1h10.4c.5 0 .8-.6.5-1-.6-.9-1.1-2.1-1.1-4.3A4.6 4.6 0 0 0 8 1.8Z" stroke="currentColor" stroke-width="1.25" stroke-linejoin="round"/>
           <path d="M6.6 13.6a1.5 1.5 0 0 0 2.8 0" stroke="currentColor" stroke-width="1.25" stroke-linecap="round"/>
         </svg>
       </button>
-      <button class="light" title="设置" on:click={() => view.set($view === "settings" ? "processes" : "settings")}>
+      <button class="light" title={$T("app.btn.settings")} on:click={() => view.set($view === "settings" ? "processes" : "settings")}>
         <svg width="13" height="13" viewBox="0 0 16 16" fill="none">
           <path d="M8 10.2a2.2 2.2 0 1 0 0-4.4 2.2 2.2 0 0 0 0 4.4Z" stroke="currentColor" stroke-width="1.3"/>
           <path d="M13.3 8c0-.4.5-.8.5-1.2 0-.4-.6-.7-.7-1.1-.1-.4.2-1-.1-1.3-.3-.3-.9 0-1.3-.1-.4-.1-.7-.7-1.1-.7-.4 0-.8.5-1.2.5h-.8C8.2 4.1 7.8 3.6 7.4 3.6c-.4 0-.7.6-1.1.7-.4.1-1-.2-1.3.1-.3.3 0 .9-.1 1.3-.1.4-.7.7-.7 1.1 0 .4.5.8.5 1.2s-.5.8-.5 1.2c0 .4.6.7.7 1.1.1.4-.2 1 .1 1.3.3.3.9 0 1.3.1.4.1.7.7 1.1.7.4 0 .8-.5 1.2-.5h.8c.4 0 .8.5 1.2.5.4 0 .7-.6 1.1-.7.4-.1 1 .2 1.3-.1.3-.3 0-.9.1-1.3.1-.4.7-.7.7-1.1 0-.4-.5-.8-.5-1.2Z" stroke="currentColor" stroke-width="1.2"/>
         </svg>
       </button>
-      <button class="light" title="最小化" on:click={() => win.minimize()}>
+      <button class="light" title={$T("app.btn.minimize")} on:click={() => win.minimize()}>
         <svg width="11" height="11" viewBox="0 0 12 12"><path d="M1.5 6h9" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
       </button>
-      <button class="light" title="最大化" on:click={() => win.toggleMaximize()}>
+      <button class="light" title={$T("app.btn.maximize")} on:click={() => win.toggleMaximize()}>
         <svg width="11" height="11" viewBox="0 0 12 12"><rect x="2" y="2" width="8" height="8" rx="1.4" stroke="currentColor" stroke-width="1.4" fill="none"/></svg>
       </button>
-      <button class="light close" title="关闭" on:click={() => win.close()}>
+      <button class="light close" title={$T("app.btn.close")} on:click={() => win.close()}>
         <svg width="11" height="11" viewBox="0 0 12 12"><path d="M2.2 2.2l7.6 7.6M9.8 2.2l-7.6 7.6" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/></svg>
       </button>
     </div>
@@ -313,17 +314,17 @@
           on:mousedown={(e) => navPress(e, i)}
           on:mouseenter={() => navEnter(i)}
           animate:flip={{ duration: 200 }}>
-          <span class="icon">{n.icon}</span><span class="lbl">{n.label}</span>
+          <span class="icon">{n.icon}</span><span class="lbl">{$T(`nav.${n.id}`)}</span>
         </button>
       {/each}
       {#if isMain && $apiEnabled}
-        <button type="button" class="nav-item" class:active={$view === "api"} title="API 消息 · 开放推送接口"
+        <button type="button" class="nav-item" class:active={$view === "api"} title={$T("app.btn.api")}
           on:click={() => navClick("api")}>
-          <span class="icon">🔔</span><span class="lbl">API 消息</span>
+          <span class="icon">🔔</span><span class="lbl">{$T("nav.api")}</span>
         </button>
       {/if}
       <div class="spacer"></div>
-      <div class="badge {admin ? 'ok' : 'warn'}">{admin ? "✓ 管理员权限" : "⚠ 普通权限"}</div>
+      <div class="badge {admin ? 'ok' : 'warn'}">{admin ? $T("app.badge.admin") : $T("app.badge.user")}</div>
       {#if isMain && !($focusMode && $view === "social")}
         <div class="nav-grip" role="presentation" title="拖动调整导航宽度" on:mousedown={navGripDown}></div>
       {/if}
@@ -331,7 +332,7 @@
 
     <main class="content">
       {#if !admin}
-        <div class="banner banner-warn">以管理员身份运行可获得完整能力（杀进程树 / 服务控制 / 计划任务管理）。</div>
+        <div class="banner banner-warn">{$T("app.banner.nonAdmin")}</div>
       {/if}
       {#if $view === "home"}
         <Home />
@@ -378,11 +379,11 @@
   {#if $confirmBox}
     <div class="modal-mask">
       <div class="modal">
-        <div class="modal-title">{$confirmBox.danger ? "⚠️ 危险操作确认" : "操作确认"}</div>
+        <div class="modal-title">{$confirmBox.danger ? $T("app.confirm.danger") : $T("app.confirm.title")}</div>
         <div class="modal-text">{$confirmBox.text}</div>
         <div class="modal-actions">
-          <button type="button" class="btn" on:click={() => closeConfirm(false)}>取消</button>
-          <button type="button" class="btn {$confirmBox.danger ? 'danger' : 'primary'}" on:click={() => closeConfirm(true)}>确定</button>
+          <button type="button" class="btn" on:click={() => closeConfirm(false)}>{$T("app.confirm.cancel")}</button>
+          <button type="button" class="btn {$confirmBox.danger ? 'danger' : 'primary'}" on:click={() => closeConfirm(true)}>{$T("app.confirm.ok")}</button>
         </div>
       </div>
     </div>
@@ -432,6 +433,6 @@
       <circle cx="19.5" cy="14.5" r="1.5" fill="#ffc914" />
     </svg>
     <div class="s-name">青刃 TexMantis</div>
-    <div class="s-tag">连接美好，自在沟通。</div>
+    <div class="s-tag">{$T("splash.tagline")}</div>
   </div>
 {/if}
