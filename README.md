@@ -1,179 +1,143 @@
-<div align="center">
-
 # 青刃 TexMantis
 
-**刃中藏螳 —— 一把藏在系统深处的精巧瑞士军刀**
+Windows 便携式系统工具箱，附带局域网即时通讯。基于 Tauri 2（Rust 后端 + Svelte 4 前端），以单个可执行文件分发，免安装、无账号、不依赖服务端。
 
-Windows 便携式系统工具箱 × 局域网社交 · 免安装 · 无账号 · 数据全本地
+- 运行环境：Windows 7 SP1 ~ Windows 11（x64）
+- 许可证：MIT
 
-`Tauri 2` · `Rust` · `Svelte 4` · `Win7 SP1 ~ Win11`
+[下载](https://github.com/kaka77/texmantis/releases) · [构建方法](#构建) · [源码结构](#源码结构)
 
-[![Platform](https://img.shields.io/badge/platform-Windows%207%20SP1%20%7C%2010%20%7C%2011-blue)](#系统要求)
-[![License: MIT](https://img.shields.io/badge/license-MIT-green)](LICENSE)
-[![Built with Tauri](https://img.shields.io/badge/built%20with-Tauri%202-orange)](https://tauri.app)
-[![vibe coding](https://img.shields.io/badge/made%20with-娱乐%20vibe%20coding-ff69b4)](#关于本项目)
+## 功能
 
-</div>
+### 系统工具
 
----
-
-> **English** · A portable Windows toolbox with a built-in LAN social suite: process/service/startup/task management, Sysmon threat alerts, E2E-encrypted LAN chat with resumable file transfer, and a local push API for your own scripts. Single portable exe, no account, no cloud — all data stays on your machine. Written for fun (vibe coding), updated casually.
-
----
-
-## 这是什么
-
-**青刃 TexMantis** 是一款 **Windows 便携式系统精密工具箱**，附带一套完整的**局域网社交功能**。
-整个程序是一个绿色免安装的 exe（外加 Win7 兼容垫片 DLL），不写注册表、不留残留、不需要账号、
-没有任何云端 —— 拷到 U 盘就能走，双击即用。
-
-它长着一副「macOS 毛玻璃颜值」的脸：Mica / Acrylic 透明窗口、无边框圆角、iOS 风格弹层与开关，
-但干的全是系统级的粗活。
-
-## 特色 ✨
-
-### 🔧 系统精密工具箱
-| 模块 | 能力 |
+| 模块 | 说明 |
 |---|---|
-| **进程** | 2s 自动刷新、CPU/内存/启动时间排序、数字签名检测（✔/⚠/✖）、结束进程树（先子后父，失败回退 `taskkill /T /F`）、资源管理器定位 |
-| **服务 / 启动项 / 计划任务** | 默认过滤微软自家项、启/停/禁用/删除、注册表 Run·RunOnce·启动文件夹、签名检测 |
-| **网络监控** | 实时连接/流量视图 |
-| **威胁预警** | 订阅 Sysmon 事件通道（`EvtSubscribe` 零轮询），可疑行为气泡提醒（如 LSASS 访问等） |
-| **文件解锁** | 找出占用文件的进程并强制解锁 |
-| **编解码 / 数据提取** | 常用格式转换与提取的顺手小工具 |
-| **系统优化** | 双击 Ctrl 切换桌面、桌面快捷方式、资源管理器右键直达终端等一键优化 |
+| 进程 | 2 秒定时刷新；按 CPU / 内存 / 启动时间排序；数字签名状态检查；结束单个进程或按父子关系结束进程树（优先 `TerminateProcess`，失败时回退 `taskkill /T /F`）；在资源管理器中定位文件 |
+| 服务 | 列出与启 / 停 / 禁用 / 删除，默认过滤 Microsoft 签名的服务 |
+| 启动项 | 注册表 `Run` / `RunOnce`（HKLM、HKCU、WOW6432Node）与启动文件夹；支持删除、定位 |
+| 计划任务 | 列出非 `\Microsoft` 路径的任务；运行 / 结束 / 启用 / 禁用 / 删除 |
+| 网络监控 | TCP / UDP 连接表刷新；可选加载 ip2region 离线库做 IP 归属地查询 |
+| 威胁预警 | 通过 `EvtSubscribe` 订阅 Sysmon/Operational 通道，按内置规则匹配可疑行为（如以内存读取权限访问 LSASS）并弹窗提示。依赖系统已安装 Sysmon |
+| 文件解锁 | 基于 Restart Manager 查询文件占用进程；支持强制结束占用进程后删除 |
+| 编解码 | 文本 Base64 / URL 编解码 |
+| 数据提取 | 从粘贴的文本中批量提取 IPv4 / IPv6 / URL / 域名 / 主机名，支持去重与排序 |
+| 系统优化 | 双击 Ctrl 显示 / 恢复桌面（低级键盘钩子实现）；桌面快捷方式创建；资源管理器右键菜单项写入 |
 
-### 💬 局域网社交（无需服务器）
-- **发现**：UDP 广播自动发现同网段同伴，一键雷达；离线灰显、上线即恢复
-- **聊天**：单聊 / 群聊 / 表情 / 字号调节 / 消息记录查看器 / 右键转发 / **已读回执** / 抖一抖（原生窗口抖动）
-- **文件传输**：**断点续传**、暂停/取消/失败重试、右键转发、双击打开；接收目录可配置
-- **端到端加密**：X25519 会话密钥协商 + ChaCha20-Poly1305 AEAD 帧加密 —— 局域网明文嗅探拿不到内容
-- **隐私**：无账号、无云端、无遥测；聊天记录与接收文件全部落在本机目录，一键清除
+### 局域网社交
 
-### 🔔 开放推送 API（脚本党的玩具）
-内置一个**仅本机回环**的 HTTP 接口，任何脚本 / 定时任务 / 监控程序都能把消息推进应用的统一气泡：
+不依赖服务器，同一局域网内的两台设备装上即可互发消息。
 
-```bash
-# 社交 → 铃铛按钮（API 消息）→ 打开开关 → 复制地址与 10 位密钥
-curl "http://127.0.0.1:25110/push?key=你的密钥&title=服务器CPU&body=92%25"
-# 或 POST JSON：{"key":"…","title":"…","body":"…"}
+- **发现**：UDP 广播（TCP / UDP 复用 25100–25109 端口段，被占自动顺延）；支持手动雷达扫描
+- **消息**：单聊、群聊、表情、聊天记录查看器、右键转发、已读回执、窗口抖动
+- **文件**：任意大小，分块传输；支持断点续传、暂停 / 取消 / 失败重试；接收目录可配置，默认为 `下载\TexMantis`
+- **加密**：每次会话以 X25519 协商密钥，帧数据用 ChaCha20-Poly1305（AEAD）加密；协商基于对端公钥指纹核对
+- **数据存放**：聊天记录（JSONL）、接收文件、配置均在本机磁盘，设置页可一键清除
+
+### 本地推送接口
+
+供同机脚本调用的 HTTP 接口，把自定义消息推入应用的气泡提醒：
+
+```
+GET/POST http://127.0.0.1:25110/push
+鉴权：?key=… / X-API-Key 头 / Authorization: Bearer …（10 位随机密钥，在设置页生成）
+参数：title（≤80 字）、body（≤600 字）
+限制：仅监听 127.0.0.1；保留最近 10 条推送；气泡弹窗有 300ms 节流
 ```
 
-10 位随机密钥鉴权（可随时重生成）、最近 10 条推送历史、300ms 节流防风暴。
-写个 20 行的脚本监控磁盘 / 爬虫结果 / CI 状态，推送进来统一提醒 —— 就这么简单。
+## 下载与使用
 
-### 🛡️ 产物加固（对分发二进制的较真）
-- `panic = "abort"` 消除栈展开表
-- **构建环境路径擦除**：链接后自动清零 panic 定位字符串（依赖 crate registry 路径 / std `/rustc/` 路径），
-  发布产物零构建机痕迹
-- 自动化 PE 补丁脚本（`tools/win7_patch.py`）：导入表兼容改名 + 路径擦除，构建一条龙
-
-## 便携使用（终端用户）
-
-到 [Releases](../../releases) 下载 `TexMantis_x.y.z_windows_x64.zip`，解压即得：
+从 [Releases](https://github.com/kaka77/texmantis/releases) 下载 zip，解压后得到：
 
 ```
 TexMantis-portable/
-  TexMantis.exe            主程序（前端资源已内嵌）
-  WebView2Loader.dll       WebView2 加载器
-  bcryptprimitives.dll     Win7 兼容垫片（自研，ProcessPrng → SystemFunction036）
-  api-ms-win-core-synch-l1-2-0.dll  Win7 兼容垫片（WaitOnAddress 系列同步原语）
-  使用说明.txt
+├── TexMantis.exe                     主程序（前端资源已内嵌）
+├── WebView2Loader.dll                WebView2 加载器
+├── bcryptprimitives.dll              Win7 垫片：ProcessPrng → SystemFunction036
+├── api-ms-win-core-synch-l1-2-0.dll  Win7 垫片：WaitOnAddress / WakeByAddress*
+└── 使用说明.txt
 ```
 
-整个文件夹拷贝到任意位置即可运行；首次运行弹出 UAC（拒绝则以普通权限继续，受限功能有提示）。
+整个目录拷贝到任意位置即可运行；卸载即删除目录。首次运行弹出 UAC，拒绝提权则以普通权限继续（部分功能受限，界面有提示）。
 
-## 系统要求
+### 系统要求
 
 | 项目 | 要求 |
 |---|---|
-| 系统 | Windows 7 SP1 / Server 2008 R2 ~ Windows 11，x64 |
-| WebView2 | Win11 / 较新 Win10 自带；Win7 需安装 [Evergreen 或 109 固定版 Runtime](https://developer.microsoft.com/microsoft-edge/webview2/) |
-| 权限 | 普通权限可用；管理员权限解锁服务控制 / 杀进程树 / 计划任务管理 |
+| 操作系统 | Windows 7 SP1 / Server 2008 R2 及以上，x64 |
+| WebView2 Runtime | Win11 与较新 Win10 自带；Win7 需自行安装（Evergreen 对 Win7 的最后支持版本为 109，可用固定版） |
+| 权限 | 普通权限可运行；管理员权限解锁服务控制、结束进程树、计划任务管理 |
 
-> **Win7 兼容是怎么做到的**：Tauri 2 官方不支持 Win7。本项目通过自研垫片（`src-tauri/win7compat/`，
-> 提供 `WaitOnAddress` 系列同步原语与 `ProcessPrng`）+ 导入表改名补丁
-> （`GetSystemTimePreciseAsFileTime → GetSystemTimeAsFileTime`、`SetProcessDpiAwarenessContext → SetProcessDPIAware`）
-> 让现代 Rust/Tauri 二进制跑在 2009 年的系统上。
+### Win7 兼容说明
 
-## 从源码构建（开发者）
+Tauri 2 生成的二进制默认引用 Win8+ 的 API。本项目在链接后对 PE 导入表做改名（`GetSystemTimePreciseAsFileTime` → `GetSystemTimeAsFileTime`、`SetProcessDpiAwarenessContext` → `SetProcessDPIAware`），并附带两个自研垫片 DLL 补齐 `WaitOnAddress` 系列同步原语与 `ProcessPrng`。补丁脚本与垫片源码见 `tools/win7_patch.py` 与 `src-tauri/win7compat/`。
 
-### 环境依赖
+## 构建
 
-| 依赖 | 版本 | 说明 |
-|---|---|---|
-| Rust | stable（rustup 默认即可） | Tauri 2 全家桶 |
-| Node.js | ≥ 20 | 前端构建 |
-| Tauri 2 CLI | `^2.1` | 随 npm devDependencies 安装 |
-| MinGW-w64 | `x86_64-w64-mingw32-gcc` | **交叉编译必需**（Linux/macOS 构建Windows 目标）；Windows 本机构建用 MSVC 工具链亦可 |
-| Win7 垫片编译 | MinGW `gcc` | 仅重新编译 `src-tauri/win7compat/*.dll` 时需要（仓库已含编译好的 DLL） |
-| Python | 3.x，仅标准库 | 运行 `tools/win7_patch.py`（导入表补丁 + 路径擦除） |
-| Sysmon（可选） | 任意近期版本 | 不装则威胁预警页为空，其余功能不受影响 |
+### 依赖
 
-> ⚠️ **WebView2** 是**运行时**要求而非构建要求 —— 构建机不需要装；最终用户的机器需要（见上表）。
+| 依赖 | 用途 |
+|---|---|
+| Rust stable（rustup 默认工具链） | 后端编译 |
+| Node.js ≥ 20 + npm | 前端编译 |
+| MinGW-w64（`x86_64-w64-mingw32-gcc`） | Linux / macOS 交叉编译 Windows 目标时作链接器；Windows 本机可用 MSVC |
+| Python 3（仅标准库） | 运行 `tools/win7_patch.py`（导入表补丁 + 构建路径擦除） |
+| MinGW gcc | 仅需重新编译 `src-tauri/win7compat/` 垫片 DLL 时使用（仓库已含编译好的 DLL） |
 
-### 构建步骤（Linux 交叉编译 Windows 示例）
+WebView2 是最终用户的运行时要求，构建机不需要。
+
+### 步骤（Linux 交叉编译示例）
 
 ```bash
-# 1. 前端依赖
 npm install
-
-# 2. 交叉编译目标 + 链接器
 rustup target add x86_64-pc-windows-gnu
 export CARGO_TARGET_X86_64_PC_WINDOWS_GNU_LINKER=x86_64-w64-mingw32-gcc
-
-# 3. 构建（--no-bundle = 只要 exe，不打安装器）
 npx tauri build --no-bundle --target x86_64-pc-windows-gnu
-#    产物：target/x86_64-pc-windows-gnu/release/texmantis.exe
-
-# 4. PE 后处理（Win7 导入表兼容 + 构建路径擦除，必跑）
+# 产物：target/x86_64-pc-windows-gnu/release/texmantis.exe
 python3 tools/win7_patch.py target/x86_64-pc-windows-gnu/release/texmantis.exe
-
-# 5. 与 WebView2Loader.dll、win7compat 两个垫片 DLL、使用说明.txt 同目录打包
 ```
 
-开发模式（本机 Windows）：
+之后将 exe 与 `WebView2Loader.dll`、两个垫片 DLL 放入同一目录即可运行。
 
-```bash
-npm run tauri dev      # Vite 热更新 + 桌面窗口
-npm run tauri build    # 完整构建（含安装器）
-```
+Windows 本机开发：`npm run tauri dev`（热更新）/ `npm run tauri build`。
 
-### 目录结构
+## 源码结构
 
 ```
-src/                      Svelte 4 前端（19 个视图组件）
-  App.svelte              应用壳：标题栏 + 导航 + 路由
-  lib/Social.svelte       局域网社交（最大组件：聊天/群/文件/设置）
-  lib/ApiView.svelte      开放推送接口视图
+src/                      Svelte 4 前端
+  App.svelte              应用壳：标题栏、导航、视图路由
+  lib/Social.svelte       局域网社交（聊天 / 群 / 文件 / 设置）
+  lib/ApiView.svelte      推送接口视图
+  lib/api.ts              Tauri invoke 的 TypeScript 封装
 src-tauri/src/
-  main.rs                 入口 + 命令注册 + 窗口美化
-  social.rs               局域网社交核心（发现/会话/传输/加密）
-  monitor.rs              Sysmon 威胁预警引擎（EvtSubscribe）
-  pushapi.rs              开放推送 HTTP 接口（127.0.0.1:25110）
-  commands.rs             进程/服务/启动项/计划任务（sysinfo 原生 + PowerShell JSON 桥）
-  optimize.rs             系统优化（低级键盘钩子等）
-  settings.rs             配置持久化（exe 同目录 config.json）
-  win7compat/             Win7 兼容垫片（C 源码 + 预编译 DLL）
-tools/win7_patch.py       PE 后处理（导入表改名 + 构建路径擦除）
+  main.rs                 入口、命令注册
+  social.rs               社交核心：发现、会话、传输、加密、回执
+  monitor.rs              Sysmon 预警引擎（EvtSubscribe）
+  pushapi.rs              推送接口 HTTP 服务（127.0.0.1:25110）
+  commands.rs             进程 / 服务 / 启动项 / 计划任务（sysinfo 原生 + PowerShell JSON）
+  optimize.rs             系统优化（键盘钩子、右键菜单等）
+  settings.rs             配置持久化（数据目录 config.json）
+  win7compat/             Win7 垫片（C 源码 + 预编译 DLL）
+tools/win7_patch.py       PE 后处理：导入表改名、panic 定位路径清零
 ```
 
-## 隐私与安全
+## 隐私与数据
 
-- **无网络出站**：所有流量限于局域网（发现/会话）与本机回环（推送 API）；不连任何云端
-- **数据本地化**：聊天记录、接收文件、配置全部在本地目录，设置内一键清除
-- **传输加密**：会话经 X25519 + ChaCha20-Poly1305 端到端加密
-- **双刃剑提醒**：本工具包含进程管理 / 服务控制 / 文件解锁等系统能力，**请仅在自己拥有授权的机器上使用**；
-  由此产生的任何后果由使用者自行承担
+- 程序不连接任何服务器。网络流量仅有两类：局域网内的发现与通讯（UDP/TCP 25100–25109），本机回环的推送接口（127.0.0.1:25110）
+- 消息与文件在传输层加密；落盘的聊天记录与接收文件为明文，存放于本地数据目录
+- 发布产物在链接后清零 panic 定位字符串中的构建机路径（`tools/win7_patch.py`），可自行复核
+- 本工具包含进程、服务、文件删除等系统能力，请在自己拥有操作授权的机器上使用，由此产生的后果由使用者承担
 
-## 关于本项目 🌴
+## 已知限制
 
-这是一个**作者娱乐 vibe coding 的软件** —— 深夜灵感来了写两笔，手感好了加个功能，
-没有 roadmap、没有 deadline、没有 KPI。
+- Win7 上 WebView2 需手动安装，且最高可用版本为 109
+- 局域网发现依赖 UDP 广播，跨网段（不同 VLAN / 子网）不可见
+- 威胁预警依赖 Sysmon，未安装时该页为空
+- 群聊无已读回执；消息记录为本地明文存储
 
-- **佛系更新**：更新频率看心情，版本号跳跃是常态，长期断更也正常
-- Issue / PR 都欢迎，但回复速度同样佛系 🙂
-- 如果它帮到了你，随手点个 Star 就是最大的鼓励
+## 关于
+
+作者业余时间编写的个人项目，练手与自用为主，没有路线图，更新不定期；Issue 与 PR 均欢迎，但不保证及时回复。
 
 ## License
 

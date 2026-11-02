@@ -20,6 +20,6 @@
     "typescript": "^5.6.3",
     "vite": "^5.4.10"
   },
-  "description": "青刃 TexMantis — Windows 便携式系统工具箱 × 局域网社交（Tauri 2 + Rust + Svelte 4）",
+  "description": "Windows portable system toolbox with LAN chat (Tauri 2 + Rust + Svelte 4). Windows 便携式系统工具箱与局域网加密聊天。",
   "license": "MIT"
 }
